@@ -1,0 +1,16 @@
+{
+  "name": "litecoin-knowledge-hub",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "frontend": "npm run dev --workspace=apps/nextjs-frontend",
+    "payload": "npm run dev --workspace=apps/payload-cms",
+    "api": "cd packages/api-fastapi && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && uvicorn main:app --reload"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,142 @@
+flowchart TD
+    %% -------------------
+    %% Node Definitions
+    %% -------------------
+
+    subgraph "User Interface & Channels"
+        %% Website/App Users
+        U_FE("fa:fa-user Next.js User")
+        FE("fa:fa-window-maximize Next.js Frontend")
+        U_WF("fa:fa-user Webflow User")
+        WF("fa:fa-globe Webflow Site")
+        U_NA("fa:fa-user Nexus App User")
+        NA("fa:fa-mobile Nexus App")
+        CW_WIDGET("fa:fa-comment-dots Chatwoot Widget")
+
+        %% Social & Messaging Users
+        U_FB("fa:fa-user Facebook User")
+        FB("fa:fa-facebook-messenger Facebook Messenger")
+        U_TG("fa:fa-user Telegram User")
+        TG("fa:fa-telegram Telegram")
+        U_EM("fa:fa-user Email User")
+        EM("fa:fa-envelope-open-text Email")
+    end
+
+    subgraph "Messaging Platform"
+        CW_SERVER("fa:fa-server Chatwoot Server")
+    end
+
+    subgraph "Chatbot Engine"
+        DF_AGENT("fa:fa-brain Dialogflow Agent")
+        DF_FULFILL("fa:fa-code Dialogflow Fulfillment")
+    end
+
+    subgraph "Application Backend (FastAPI)"
+        API("fa:fa-cloud FastAPI Backend")
+        HWP("fa:fa-project-diagram Haystack Pipeline<br/>(Retriever → Ranker → Reader)")
+        LLM("fa:fa-robot LLM (e.g., Gemini Pro)")
+    end
+
+    subgraph "Content Ingestion & Processing"
+        SYNC("fa:fa-sync-alt Content Sync Service")
+        HP("fa:fa-cogs Haystack Preprocessor<br/>(chunking, embedding)")
+        DS("fa:fa-layer-group Haystack DocumentStore<br/>(FAISS/Elasticsearch)")
+    end
+
+    subgraph "Content Management System (Payload)"
+        AUTHORS("fa:fa-users Foundation Team & Contributors")
+        ADMIN("fa:fa-desktop Payload Admin Panel")
+        PAYLOAD_DB("fa:fa-database Payload DB (MongoDB)")
+        HOOK("fa:fa-bell Payload 'afterChange' Hook")
+        PAYLOAD_API("fa:fa-code Payload REST/GraphQL API")
+    end
+
+    subgraph "Human Support"
+        H_SUPPORT_NA("fa:fa-headset Litecoin Nexus Support Agent")
+        H_SUPPORT_FB("fa:fa-headset Litecoin Facebook Support Agent")
+    end
+
+    subgraph "Automated Evaluation & Monitoring"
+        TEST("fa:fa-vial Haystack Eval Module")
+        MET("fa:fa-chart-line Metrics Service")
+        DASH("fa:fa-tachometer-alt Grafana Dashboards")
+        ALERT("fa:fa-bell Alerting & Email")
+    end
+
+    %% -------------------
+    %% Style Definitions
+    %% -------------------
+    classDef uiStyle fill:#e6f7ff,stroke:#91d5ff,stroke-width:2px,color:#000
+    classDef backendStyle fill:#f6ffed,stroke:#b7eb8f,stroke-width:2px,color:#000
+    classDef ingestionStyle fill:#fffbe6,stroke:#ffe58f,stroke-width:2px,color:#000
+    classDef storageStyle fill:#fff0f6,stroke:#ffadd2,stroke-width:2px,color:#000
+    classDef cmsStyle fill:#e6fffb,stroke:#87e8de,stroke-width:2px,color:#000
+    classDef humanStyle fill:#fff0e6,stroke:#ffc069,stroke-width:2px,color:#000
+    classDef highlightUI fill:#fff7e6,stroke:#ffa940,stroke-width:3px,color:#000
+    classDef monitorStyle fill:#f9f0ff,stroke:#d3adf7,stroke-width:2px,color:#000
+
+    %% Apply styles
+    class U_FE,FE,U_WF,WF,CW_WIDGET,U_TG,TG,U_EM,EM uiStyle
+    class U_NA,NA,U_FB,FB highlightUI
+    class CW_SERVER,DF_AGENT,DF_FULFILL,API,HWP,LLM backendStyle
+    class SYNC,HP ingestionStyle
+    class DS storageStyle
+    class AUTHORS,ADMIN,PAYLOAD_DB,HOOK,PAYLOAD_API cmsStyle
+    class H_SUPPORT_NA,H_SUPPORT_FB humanStyle
+    class TEST,MET,DASH,ALERT monitorStyle
+
+    %% -------------------
+    %% Connection Definitions
+    %% -------------------
+
+    %% Ingestion & Indexing
+    AUTHORS --> ADMIN
+    ADMIN --> PAYLOAD_DB
+    ADMIN --> HOOK
+    HOOK --> SYNC
+    SYNC --> PAYLOAD_API
+    PAYLOAD_API --> SYNC
+    SYNC --> HP
+    HP --> DS
+
+    %% Omnichannel Chat flow
+    U_FE --> FE
+    U_WF --> WF
+    U_NA --> NA
+    FE --> CW_WIDGET
+    WF --> CW_WIDGET
+    NA --> CW_WIDGET
+    CW_WIDGET --> CW_SERVER
+
+    U_FB --> FB
+    U_TG --> TG
+    U_EM --> EM
+    FB --> CW_SERVER
+    TG --> CW_SERVER
+    EM --> CW_SERVER
+
+    %% Bot Logic Flow
+    CW_SERVER --> DF_AGENT
+    DF_AGENT --> DF_FULFILL
+    DF_FULFILL --> API
+
+    %% Haystack pipeline processing
+    API --> HWP
+    HWP --> DS
+    DS --> HWP
+    HWP --> LLM
+    LLM --> HWP
+    HWP --> API
+
+    %% Corrected return path
+    API --> DF_FULFILL
+
+    %% Human escalation
+    CW_SERVER -- "Escalate to Live Agent" --> H_SUPPORT_NA
+    CW_SERVER -- "Escalate to Live Agent" --> H_SUPPORT_FB
+
+    %% Automated Eval & Monitoring
+    TEST --> MET
+    HWP --> MET
+    MET --> DASH
+    MET --> ALERT

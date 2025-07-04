@@ -1,0 +1,10 @@
+flowchart TD
+  %% … existing ingestion + query flows …
+  subgraph "Monitoring & Feedback"
+    METRICS("Metrics Service & Grafana"):::monitorStyle
+    FEED("Feedback API & Payload Feedback DB"):::feedbackStyle
+    ALERT("Accuracy Alerts & Email"):::monitorStyle
+  end
+  RAG --> METRICS
+  FE --> FEED
+  METRICS --> ALERT
